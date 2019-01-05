@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Query IP Region</title>
+</head>
+<body>
+<h1>Query IP Region</h1>
+<form id="queryForm" action="" method="GET" onsubmit="return query();">
+    <label for="ips">IP (one ip per line):</label>
+    <p></p><textarea id="ips" cols="40" rows="10"></textarea>
+    <p></p>
+    <button type="submit">Query</button>
+</form>
+<p></p><textarea id="ipsRegion" cols="40" rows="10"></textarea>
+<script>
+function query(){
+    var ips = document.getElementById('ips').value;
+    var url ='/ip/'+ips.split('\n').join(',');
+    ajaxGet(url);
+    return false;
+}
+function ajaxGet(url){
+    var ajax = ajaxObject();
+    ajax.open("GET",url,true);//open(方法、文件名、异步传输）
+    ajax.send();
+    ajax.onreadystatechange=function(){
+    //readyState: 浏览器和服务器，进行到哪一步了, 0->（未初始化）：还没有调用 open() 方法。1->（载入）：已调用 send() 方法，正在发送请求。2->载入完成）：send() 方法完成，已收到全部响应内容。3->（解析）：正在解析响应内容。4->（完成）：响应内容解析完成，可以在客户端调用。
+        if(ajax.readyState==4){
+            if(ajax.status==200){//判断是否成功,如果是200，就代表成功
+                document.getElementById('ipsRegion').value = ajax.responseText;
+            }else{
+                document.getElementById('ipsRegion').value = 'query error';
+            }
+        }
+    };
+}
+function ajaxObject(){
+    if(window.XMLHttpRequest){//如果有XMLHttpRequest，那就是非IE6浏览器。()里面加window的原因下面会有描述。
+        return oAjax = new XMLHttpRequest();//创建ajax对象
+    }else{//如果没有XMLHttpRequest，那就是IE6浏览器
+        return oAjax = new ActiveXObject("Microsoft.XMLHTTP");//IE6浏览器创建ajax对象
+    }
+}
+</script>
+</body>
+</html>
